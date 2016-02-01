@@ -27,6 +27,8 @@ namespace ChatClientWPF
         ObservableCollection<ChatLine> chatLines = new ObservableCollection<ChatLine>();
         TcpClient client = null;
         NetworkStream stream = null;
+        //bool connected = false;
+        Thread waitThread = null;
 
         public MainWindow()
         {
@@ -42,22 +44,14 @@ namespace ChatClientWPF
         private void sendBtn_Click(object sender, RoutedEventArgs e)
         {
             //addMsg("Knacke", inputBox.Text);
-            Byte[] msg = Encoding.ASCII.GetBytes(inputBox.Text);
+            Byte[] msg = Encoding.Unicode.GetBytes(inputBox.Text);
             stream.Write(msg, 0, msg.Length);
             inputBox.Text = "";
         }
 
         private void addMsg (string userName, string msg)
         {
-            //if (InvokeRequired)
-            //{
-            //    //behöver inte riktigt förstå
-            //    this.Invoke(new Action<string, string>(addMsg), new object[] { userName, msg });
-            //    return;
-            //}
             Application.Current.Dispatcher.BeginInvoke(new Action(() => this.chatLines.Add(new ChatLine { UserName = userName, Message = msg })));
-
-            //chatLines.Add(new ChatLine { UserName = userName, Message = msg });
             Application.Current.Dispatcher.BeginInvoke(new Action(() => chatScroll.ScrollToBottom()));
         }
 
@@ -68,29 +62,42 @@ namespace ChatClientWPF
             {
                 client = new TcpClient("127.0.0.1", 5000);
                 stream = client.GetStream();
-                statusLabel.Foreground = Brushes.LawnGreen;
-                statusLabel.Content = "Connected";
-                connectBtn.Content = "Disconnect";
-                Thread waitThread = new Thread(new ThreadStart(WaitForResponse));
+                UiToggleConnected(true);
+                //Skicka username först
+                Byte[] msg = Encoding.Unicode.GetBytes("Knecke");
+                stream.Write(msg, 0, msg.Length);
+                waitThread = new Thread(new ThreadStart(WaitForResponse));
+                //connected = true;
                 waitThread.Start();
 
             }
             else
             {
+                //connected = false;
+                waitThread.Abort();
                 stream.Close();
                 client.Close();
-                statusLabel.Foreground = Brushes.DarkRed;
-                statusLabel.Content = "Not connected";
-                connectBtn.Content = "Connect";
+                client = null;
+                UiToggleConnected(false);
             }
+        }
+        private void UiToggleConnected (bool connected)
+        {
+            statusLabel.Foreground = connected ? Brushes.LawnGreen : Brushes.DarkRed;
+            statusLabel.Content = connected ? "Connected" : "Offline";
+            connectBtn.Content = connected ? "Disconnect" : "Connect";
+            inputBox.IsEnabled = connected;
+            sendBtn.IsEnabled = connected;
         }
         private void WaitForResponse()
         {
-            byte[] recievedMessage = new byte[256];
             while (true)
             {
+                byte[] recievedMessage = new byte[256];
                 stream.Read(recievedMessage, 0, recievedMessage.Length);
-                addMsg("test", Encoding.Unicode.GetString(recievedMessage).TrimEnd('\0'));
+                //Delar upp i användarnamn och meddelande. Inte helt vackert kanske? Lägg till koder för annat..
+                string[] messageSplit = Encoding.Unicode.GetString(recievedMessage).TrimEnd('\0').Split('$');
+                addMsg(messageSplit[0], messageSplit[1]);
                 //SetResponseMessage(Encoding.ASCII.GetString(recievedMessage));
             }
         }
