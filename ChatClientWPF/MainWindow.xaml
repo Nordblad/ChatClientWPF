@@ -7,6 +7,36 @@
         mc:Ignorable="d"
         Title="Chat NOOOOOOOW!" Height="350" Width="525">
     <Grid>
-        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="391*"/>
+            <ColumnDefinition Width="126*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="35"/>
+            <RowDefinition/>
+            <RowDefinition Height="34"/>
+        </Grid.RowDefinitions>
+        <Button x:Name="button" Content="Button" HorizontalAlignment="Left" Margin="91,7,0,0" VerticalAlignment="Top" Width="75" Height="25"/>
+        <TextBox x:Name="ipBox" HorizontalAlignment="Left" Height="25" Margin="10,7,0,0" TextWrapping="Wrap" Text="127.0.0.1" VerticalAlignment="Top" Width="76"/>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+            <ItemsControl x:Name="messageList">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type local:ChatLine}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="30" />
+                                <ColumnDefinition Width="1*" />
+                            </Grid.ColumnDefinitions>
+                            <Label Content="{Binding UserName}" />
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                
+            </ItemsControl>
+        </ScrollViewer>
+
+        <TextBox x:Name="inputBox" HorizontalAlignment="Left" Height="23" Margin="10,2,0,0" Grid.Row="2" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="371"/>
+        <Button x:Name="sendBtn" Content="Send" Grid.Column="1" HorizontalAlignment="Left" Margin="0,2,0,0" Grid.Row="2" VerticalAlignment="Top" Width="75" Height="22"/>
     </Grid>
 </Window>
