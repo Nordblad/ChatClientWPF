@@ -41,6 +41,8 @@ namespace ChatClientWPF
             serverPicker.ItemsSource = ReadServerListFromFile();
             serverPicker.SelectedIndex = 0;
             messageList.ItemsSource = chatLines;
+
+            emojiList.ItemsSource = new List<string> { "😁", "😂", "😉", "😍", "😣", "😢", "😲", "❤️‍", "🐶", "🌹", "💉" };
         }
 
         private void sendBtn_Click(object sender, RoutedEventArgs e)
@@ -102,6 +104,7 @@ namespace ChatClientWPF
             nameBox.IsEnabled = !connected;
             serverPicker.IsEnabled = !connected;
             SetValue(TitleProperty, connected ? "Chat" : "Chat - Offline");
+            emojiList.IsEnabled = connected;
         }
         private void WaitForResponse()
         {
@@ -121,7 +124,6 @@ namespace ChatClientWPF
             string line;
             string[] lineParts;
 
-            // Read the file and display it line by line.
             System.IO.StreamReader file = new System.IO.StreamReader("ServerList.txt"); //"ServerList.txt");
 
             while ((line = file.ReadLine()) != null)
@@ -141,6 +143,13 @@ namespace ChatClientWPF
                 waitThread.Abort();
                 client.Close();
             }
+        }
+
+        private void EmojiBtn_Click(object sender, RoutedEventArgs e)
+        {
+            Button b = (Button)sender;
+            inputBox.Text += b.Tag.ToString();
+            //MessageBox.Show(b.Tag.ToString());
         }
     }
 }
