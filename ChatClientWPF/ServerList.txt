@@ -1,0 +1,3 @@
+Localhost;127.0.0.1;5000
+Raspberry;10.0.0.8;5000
+Disponentgatan;31.211.225.81;5000

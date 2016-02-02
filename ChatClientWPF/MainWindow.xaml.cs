@@ -59,6 +59,7 @@ namespace ChatClientWPF
         {
             if (client == null)
             {
+                
                 client = new TcpClient("127.0.0.1", 5000);
                 stream = client.GetStream();
                 UiToggleConnected(true);
