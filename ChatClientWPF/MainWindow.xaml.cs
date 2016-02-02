@@ -51,11 +51,10 @@ namespace ChatClientWPF
 
         private void addMsg (string userName, string msg)
         {
-            Application.Current.Dispatcher.BeginInvoke(new Action(() => this.chatLines.Add(new ChatLine { UserName = userName, Message = msg })));
+            Application.Current.Dispatcher.BeginInvoke(new Action(() => chatLines.Add(new ChatLine { UserName = userName, Message = msg })));
             Application.Current.Dispatcher.BeginInvoke(new Action(() => chatScroll.ScrollToBottom()));
         }
 
-        //FRÅN LEKTIONEN===========================
         private void connectBtn_Click(object sender, RoutedEventArgs e)
         {
             if (client == null)
@@ -73,7 +72,6 @@ namespace ChatClientWPF
             }
             else
             {
-                //connected = false;
                 waitThread.Abort();
                 stream.Close();
                 client.Close();
