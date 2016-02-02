@@ -42,7 +42,7 @@ namespace ChatClientWPF
             serverPicker.SelectedIndex = 0;
             messageList.ItemsSource = chatLines;
 
-            emojiList.ItemsSource = new List<string> { "😁", "😂", "😉", "😍", "😣", "😢", "😲", "❤️‍", "🐶", "🌹", "💉" };
+            emojiList.ItemsSource = new List<string> { "😁", "😂", "😉", "😍", "😣", "😢", "😲", "❤️‍", "🐶", "🌹", "💉", "⛔️", "🇸🇪", "☠", "©️", "💩" };
         }
 
         private void sendBtn_Click(object sender, RoutedEventArgs e)
@@ -149,6 +149,8 @@ namespace ChatClientWPF
         {
             Button b = (Button)sender;
             inputBox.Text += b.Tag.ToString();
+            inputBox.Focus();
+            inputBox.CaretIndex = inputBox.Text.Length;
             //MessageBox.Show(b.Tag.ToString());
         }
     }
