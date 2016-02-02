@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ChatClientWPF"
         mc:Ignorable="d"
-        Title="Chat NOOOOOOOW!" Height="350" Width="525">
+        Icon="ChatIcon.ico"
+        Title="Chat - Offline" Height="350" Width="525">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="391*"/>
