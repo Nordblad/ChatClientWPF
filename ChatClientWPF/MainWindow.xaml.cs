@@ -38,6 +38,8 @@ namespace ChatClientWPF
             chatLines.Add(new ChatLine { UserName = "Egot", Message = "Lorem upsum dolor sit amet! Längre meddelande!" });
             chatLines.Add(new ChatLine { UserName = "Mamma", Message = "Kort meddelande" });
             //messageList.Items.Add(chatLines);
+            serverPicker.ItemsSource = ReadServerListFromFile();
+            serverPicker.SelectedIndex = 0;
             messageList.ItemsSource = chatLines;
         }
 
@@ -47,6 +49,7 @@ namespace ChatClientWPF
             Byte[] msg = Encoding.Unicode.GetBytes(inputBox.Text);
             stream.Write(msg, 0, msg.Length);
             inputBox.Text = "";
+            inputBox.Focus();
         }
 
         private void addMsg (string userName, string msg)
@@ -59,12 +62,21 @@ namespace ChatClientWPF
         {
             if (client == null)
             {
-                
-                client = new TcpClient("127.0.0.1", 5000);
+                ChatServer server = (ChatServer)serverPicker.SelectedItem;
+                try
+                {
+                    client = new TcpClient(server.Ip, server.Port);
+                }
+                catch
+                {
+                    MessageBox.Show("Could not connect to " + server.Ip + ":" + server.Port);
+                    return;
+                }
+
                 stream = client.GetStream();
                 UiToggleConnected(true);
                 //Skicka username först
-                Byte[] msg = Encoding.Unicode.GetBytes("Knecke");
+                Byte[] msg = Encoding.Unicode.GetBytes(nameBox.Text);
                 stream.Write(msg, 0, msg.Length);
                 waitThread = new Thread(new ThreadStart(WaitForResponse));
                 //connected = true;
@@ -87,17 +99,47 @@ namespace ChatClientWPF
             connectBtn.Content = connected ? "Disconnect" : "Connect";
             inputBox.IsEnabled = connected;
             sendBtn.IsEnabled = connected;
+            nameBox.IsEnabled = !connected;
+            serverPicker.IsEnabled = !connected;
+            SetValue(TitleProperty, connected ? "Chat" : "Chat - Offline");
         }
         private void WaitForResponse()
         {
             while (true)
             {
-                byte[] recievedMessage = new byte[256];
+                byte[] recievedMessage = new byte[512];
                 stream.Read(recievedMessage, 0, recievedMessage.Length);
                 //Delar upp i användarnamn och meddelande. Inte helt vackert kanske? Lägg till koder för annat..
                 string[] messageSplit = Encoding.Unicode.GetString(recievedMessage).TrimEnd('\0').Split('$');
                 addMsg(messageSplit[0], messageSplit[1]);
-                //SetResponseMessage(Encoding.ASCII.GetString(recievedMessage));
+            }
+        }
+
+        private List<ChatServer> ReadServerListFromFile ()
+        {
+            var ServerList = new List<ChatServer>();
+            string line;
+            string[] lineParts;
+
+            // Read the file and display it line by line.
+            System.IO.StreamReader file = new System.IO.StreamReader("ServerList.txt"); //"ServerList.txt");
+
+            while ((line = file.ReadLine()) != null)
+            {
+                lineParts = line.Split(';');
+                ServerList.Add(new ChatServer { Name = lineParts[0], Ip = lineParts[1], Port = int.Parse(lineParts[2]) });
+            }
+
+            file.Close();
+            return ServerList;
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (client != null)
+            {
+                waitThread.Abort();
+                client.Close();
             }
         }
     }

@@ -4,6 +4,16 @@
              xmlns:local="clr-namespace:ChatClientWPF"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <Style x:Key="Message" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+        <Style x:Key="Nickname" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Foreground" Value="#FF404040" />
+            <!--<Setter Property="FontWeight" Value="Light" />-->
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="Margin" Value="0,0,5,0" />
+        </Style>
     </Application.Resources>
 </Application>

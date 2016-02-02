@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:ChatClientWPF"
         mc:Ignorable="d"
         Icon="ChatIcon.ico"
-        Title="Chat - Offline" Height="350" Width="525">
+        Title="Chat - Offline" Height="350" Width="525" Closing="Window_Closing">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="391*"/>
@@ -16,10 +16,18 @@
             <RowDefinition/>
             <RowDefinition Height="34"/>
         </Grid.RowDefinitions>
+        <ComboBox x:Name="serverPicker" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="155" Height="24">
+            <ComboBox.ItemTemplate>
+                <DataTemplate DataType="{x:Type local:ChatServer}">
+                    <TextBlock Text="{Binding Name}" />
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
+        <TextBox x:Name="nameBox" HorizontalAlignment="Left" Height="24" Margin="175,10,0,0" TextWrapping="Wrap" Text="TioFrsadtk" VerticalAlignment="Top" Width="80" MaxLength="12"/>
         <Label x:Name="statusLabel" Content="Offline" HorizontalAlignment="Right" Margin="0,10,95,0" VerticalAlignment="Top" FontWeight="Bold" Foreground="DarkRed" Height="24" VerticalContentAlignment="Center"/>
         <Button x:Name="connectBtn" Content="Connect" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top" Width="75" Height="24" Click="connectBtn_Click"/>
 
-        <ScrollViewer Name="chatScroll" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Row="1" Margin="10,5">
+        <ScrollViewer Name="chatScroll" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Grid.Row="1" Margin="10,5">
             <ItemsControl Name="messageList">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -29,13 +37,13 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="{x:Type local:ChatLine}">
-                        <Grid>
+                        <Grid Margin="0,3">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="70" />
+                                <ColumnDefinition Width="90" />
                                 <ColumnDefinition Width="1*" />
                             </Grid.ColumnDefinitions>
-                            <Label Content="{Binding UserName}" Margin="0,0,5,0" HorizontalAlignment="Right" Foreground="DarkSlateGray"/>
-                            <Label Content="{Binding Message}" Grid.Column="1" />
+                            <TextBlock Text="{Binding UserName}" Style="{StaticResource Nickname}"/>
+                            <TextBlock Text="{Binding Message}" Grid.Column="1" Style="{StaticResource Message}" />
                         </Grid>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
