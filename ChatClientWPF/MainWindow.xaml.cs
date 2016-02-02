@@ -33,10 +33,10 @@ namespace ChatClientWPF
         public MainWindow()
         {
             InitializeComponent();
-
-            chatLines.Add(new ChatLine { UserName = "Knacke", Message = "Lorem upsum dolor sit amet!" });
-            chatLines.Add(new ChatLine { UserName = "Egot", Message = "Lorem upsum dolor sit amet! Längre meddelande!" });
-            chatLines.Add(new ChatLine { UserName = "Mamma", Message = "Kort meddelande" });
+            //Fejkmeddelanden för design
+            //chatLines.Add(new ChatLine { UserName = "Knacke", Message = "Lorem upsum dolor sit amet!" });
+            //chatLines.Add(new ChatLine { UserName = "Egot", Message = "Lorem upsum dolor sit amet! Längre meddelande!" });
+            //chatLines.Add(new ChatLine { UserName = "Mamma", Message = "Kort meddelande" });
             //messageList.Items.Add(chatLines);
             serverPicker.ItemsSource = ReadServerListFromFile();
             serverPicker.SelectedIndex = 0;
