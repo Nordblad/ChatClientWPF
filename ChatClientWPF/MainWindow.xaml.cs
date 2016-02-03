@@ -41,8 +41,12 @@ namespace ChatClientWPF
             serverPicker.ItemsSource = ReadServerListFromFile();
             serverPicker.SelectedIndex = 0;
             messageList.ItemsSource = chatLines;
+            List<string> nameList = new List<string> { "Knacke", "ThugQueen", "Knugen", "PizzaBoy", "MrsDoodle", "Dumbo", "Cheezy", "Olle", "Kanye", "Garfunkle", "Belle", "Sebastian" };
+            var r = new Random();
+            var n = r.Next(nameList.Count);
+            nameBox.Text = nameList[n] + r.Next(56, 96); 
 
-            emojiList.ItemsSource = new List<string> { "😁", "😂", "😉", "😍", "😣", "😢", "😲", "❤️‍", "🐶", "🌹", "💉", "⛔️", "🇸🇪", "☠", "©️", "💩" };
+            emojiList.ItemsSource = new List<string> { "😁", "😂", "😉", "😍", "😣", "😢", "😲", "❤️‍", "🐶", "🌹", "💉", "⛔️", "👣", "☠", "©️", "💩" };
         }
 
         private void sendBtn_Click(object sender, RoutedEventArgs e)
@@ -87,12 +91,17 @@ namespace ChatClientWPF
             }
             else
             {
-                waitThread.Abort();
-                stream.Close();
-                client.Close();
-                client = null;
-                UiToggleConnected(false);
+                Disconnect();
             }
+        }
+        private void Disconnect ()
+        {
+            waitThread.Abort();
+            stream.Close();
+            client.Close();
+            client = null;
+            UiToggleConnected(false);
+            chatLines.Add(new ChatLine { Message = "--- You disconnected from the server ---" });
         }
         private void UiToggleConnected (bool connected)
         {
@@ -111,7 +120,15 @@ namespace ChatClientWPF
             while (true)
             {
                 byte[] recievedMessage = new byte[512];
-                stream.Read(recievedMessage, 0, recievedMessage.Length);
+                int messageSize;
+                messageSize = stream.Read(recievedMessage, 0, recievedMessage.Length);
+                if (messageSize <= 0)
+                {
+                    //Måste invoka disconnect!
+                    MessageBox.Show("Lost contact with server!");
+                    Application.Current.Dispatcher.BeginInvoke(new Action(() => Disconnect()));
+                    break;
+                }
                 //Delar upp i användarnamn och meddelande. Inte helt vackert kanske? Lägg till koder för annat..
                 string[] messageSplit = Encoding.Unicode.GetString(recievedMessage).TrimEnd('\0').Split('$');
                 addMsg(messageSplit[0], messageSplit[1]);
@@ -124,7 +141,7 @@ namespace ChatClientWPF
             string line;
             string[] lineParts;
 
-            System.IO.StreamReader file = new System.IO.StreamReader("ServerList.txt"); //"ServerList.txt");
+            System.IO.StreamReader file = new System.IO.StreamReader("ServerList.txt"); 
 
             while ((line = file.ReadLine()) != null)
             {
