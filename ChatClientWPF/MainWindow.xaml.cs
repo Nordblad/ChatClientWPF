@@ -87,7 +87,6 @@ namespace ChatClientWPF
                 waitThread = new Thread(new ThreadStart(WaitForResponse));
                 //connected = true;
                 waitThread.Start();
-
             }
             else
             {
@@ -97,6 +96,7 @@ namespace ChatClientWPF
         private void Disconnect ()
         {
             waitThread.Abort();
+            //MessageBox.Show("Client: " + client.Connected + ", stream: " + stream.ToString());
             stream.Close();
             client.Close();
             client = null;
@@ -120,19 +120,32 @@ namespace ChatClientWPF
             while (true)
             {
                 byte[] recievedMessage = new byte[512];
-                int messageSize;
-                messageSize = stream.Read(recievedMessage, 0, recievedMessage.Length);
+                int messageSize = 0;
+                try
+                {
+                    messageSize = stream.Read(recievedMessage, 0, recievedMessage.Length);
+                }
+                catch
+                {
+                    //FUL UPPREPNING, FIXA KANSKE?
+                    //MessageBox.Show("Lost contact with server!");
+                    //Application.Current.Dispatcher.BeginInvoke(new Action(() => Disconnect()));
+                    //MessageBox.Show("ERERER" + client.Connected);
+                    break;
+                }
                 if (messageSize <= 0)
                 {
                     //Måste invoka disconnect!
                     MessageBox.Show("Lost contact with server!");
-                    Application.Current.Dispatcher.BeginInvoke(new Action(() => Disconnect()));
+                    //Application.Current.Dispatcher.BeginInvoke(new Action(() => Disconnect()));
                     break;
                 }
                 //Delar upp i användarnamn och meddelande. Inte helt vackert kanske? Lägg till koder för annat..
                 string[] messageSplit = Encoding.Unicode.GetString(recievedMessage).TrimEnd('\0').Split('$');
                 addMsg(messageSplit[0], messageSplit[1]);
             }
+            //MessageBox.Show("Lost contact with server!");
+            Application.Current.Dispatcher.BeginInvoke(new Action(() => Disconnect()));
         }
 
         private List<ChatServer> ReadServerListFromFile ()
